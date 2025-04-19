@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ENC(6Wez3LMxBEBs31gtD4t70Tg8b51VMZoA2k3iXUUzND5Z5kuJfyeEmw==)
+    username: ENC(Ws5JbqTT5uKx7MHcKV9JmA==)
+    password: ENC(7JqtAw31LzbkYDi+aQkdBA==)
+
+  jasypt:
+    encryptor:
+      bean: jasyptStringEncryptor
+      password: ${ENCRYPT_KEY}
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    defer-datasource-initialization: true
+
+logging:
+  level:
+    root: INFO
