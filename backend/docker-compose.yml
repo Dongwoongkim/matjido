@@ -1,0 +1,14 @@
+services:
+  my-server:
+    build: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+  db:
+    image: mysql:8.0.32
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: matjido
+    ports:
+      - 3307:3306
