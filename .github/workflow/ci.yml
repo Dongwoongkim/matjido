@@ -2,7 +2,8 @@ name: CI
 
 on:
   push:
-    branches: "develop"
+    branches:
+      - develop
 
 jobs:
   build:
@@ -51,12 +52,18 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Docker meta
+        id: docker_meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/matjido-app
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: ./backend
           file: ./backend/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/matjido-app
+          tags: ${{ secrets.DOCKER_USERNAME }}/matjido-app:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
