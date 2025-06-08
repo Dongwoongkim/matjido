@@ -1,7 +1,7 @@
 HELP.md
 .gradle
 .env
-application_secret.yml
+src/main/resources/application_secret.yml
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/

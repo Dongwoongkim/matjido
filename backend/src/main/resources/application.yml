@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(w/42Emgvde0KuhS1zqC/UJ7QXemH8rlTf+8ADw4X+xC76uXhHaiHWA==)
+    url: jdbc:mysql://localhost:3307/matjido
     username: ENC(Ws5JbqTT5uKx7MHcKV9JmA==)
     password: ENC(7JqtAw31LzbkYDi+aQkdBA==)
 
