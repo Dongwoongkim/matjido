@@ -18,21 +18,18 @@ public class KakaoUserDetailsService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
 
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oauth2User = super.loadUser(userRequest);
-        KakaoUserInfo userInfo = new KakaoUserInfo(oauth2User.getAttributes());
+    public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
+        OAuth2User oauthUser = super.loadUser(request);
+        String email = new KakaoUserInfo(oauthUser.getAttributes()).getEmail();
 
-        User user = userRepository.findByEmail(userInfo.getEmail()).orElseGet(
-            () ->
-                userRepository.save(
-                    User.create(userInfo.getEmail())
-                )
+        User user = userRepository.findByEmail(email)
+            .orElseGet(() -> userRepository.save(User.create(email)));
+
+        return KakaoUserDetails.of(
+            user.getMemberId(),
+            user.getEmail(),
+            Collections.singletonList(new SimpleGrantedAuthority(user.getRole())),
+            oauthUser.getAttributes()
         );
-
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
-
-        return new KakaoUserDetails(user.getEmail(),
-            Collections.singletonList(authority), // 단일 authority 이므로 싱글톤으로 생성
-            oauth2User.getAttributes());
     }
 }

@@ -21,7 +21,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
-    private Long member_id;
+    private Long memberId;
 
     @Enumerated(EnumType.STRING)
     private Role role;

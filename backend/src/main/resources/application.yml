@@ -25,8 +25,13 @@ spring:
     defer-datasource-initialization: true
 
   config:
-    import: "classpath:application_secret.yml"  # application_secret.yml ?? ????
+    import: "classpath:application-secret.yml"
 
 logging:
   level:
     root: INFO
+
+#
+#jwt:
+#  secret_key: ${jwt.secret-key}
+#  access-token-validity-in-seconds: 1800

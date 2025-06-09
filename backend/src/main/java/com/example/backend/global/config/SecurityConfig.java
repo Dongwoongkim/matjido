@@ -1,4 +1,4 @@
-package com.example.backend.config;
+package com.example.backend.global.config;
 
 import com.example.backend.global.oauth.kakao.KakaoUserDetailsService;
 import java.util.List;
