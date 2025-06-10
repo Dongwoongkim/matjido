@@ -1,6 +1,6 @@
 package com.example.backend.domain.user.repository;
 
-import com.example.backend.domain.user.model.User;
+import com.example.backend.domain.user.entity.User;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

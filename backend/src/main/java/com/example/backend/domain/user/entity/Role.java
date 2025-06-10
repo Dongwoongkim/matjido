@@ -1,4 +1,4 @@
-package com.example.backend.domain.user.model;
+package com.example.backend.domain.user.entity;
 
 import lombok.Getter;
 

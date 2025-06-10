@@ -1,4 +1,4 @@
-package com.example.backend.domain.user.controller;
+package com.example.backend.domain.user.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

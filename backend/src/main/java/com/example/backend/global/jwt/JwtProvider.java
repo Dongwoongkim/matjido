@@ -1,7 +1,9 @@
 package com.example.backend.global.jwt;
 
-import com.example.backend.domain.user.model.Role;
+import com.example.backend.domain.user.entity.Role;
 import com.example.backend.global.oauth.kakao.KakaoUserDetails;
+import com.example.backend.global.response.TokenResponse;
+import com.example.backend.global.response.TokenValidateResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -27,15 +29,18 @@ import org.springframework.stereotype.Component;
 public class JwtProvider implements InitializingBean {
 
     private final String secretKey;
-    private final long accessTokenExpirationMillis;
+    private final long accessTokenExpirationMs;
+    private final long refreshTokenExpirationMs;
     private Key key;
 
     public JwtProvider(
         @Value("${jwt.secret-key}") String secretKey,
-        @Value("${jwt.access-token-validity-in-seconds}") long accessTokenExpirationSeconds
+        @Value("${jwt.access-token-validity-in-seconds}") long accessTokenExpirationSeconds,
+        @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenExpirationSeconds
     ) {
         this.secretKey = secretKey;
-        this.accessTokenExpirationMillis = accessTokenExpirationSeconds * 1000;
+        this.accessTokenExpirationMs = accessTokenExpirationSeconds * 1000;
+        this.refreshTokenExpirationMs = refreshTokenExpirationSeconds * 1000;
     }
 
     @Override
@@ -44,20 +49,33 @@ public class JwtProvider implements InitializingBean {
         this.key = new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 
-    public String generateAccessToken(Long memberId, String email, Role role) {
+    public TokenResponse generateAccessToken(Long memberId, String email, Role role) {
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + accessTokenExpirationMillis);
+        Date accessTokenExpirationTime = new Date(now.getTime() + accessTokenExpirationMs);
+        Date refreshTokenExpirationTime = new Date(now.getTime() + refreshTokenExpirationMs);
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("MEMBER_ID", memberId);
-        claims.put("EMAIL", email);
-        claims.put("AUTHORITY", role.name());
+        Map<String, Object> accessClaims = new HashMap<>();
+        accessClaims.put("MEMBER_ID", memberId);
+        accessClaims.put("EMAIL", email);
+        accessClaims.put("AUTHORITY", role.name());
 
-        return Jwts.builder()
-            .setClaims(claims)
-            .setExpiration(expiration)
-            .signWith(key, SignatureAlgorithm.HS512)
-            .compact();
+        Map<String, Object> refreshClaims = new HashMap<>();
+        refreshClaims.put("tokenType", "refresh");
+
+        return TokenResponse.builder().
+            accessToken(Jwts.builder()
+                .setClaims(accessClaims)
+                .setExpiration(accessTokenExpirationTime)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact()
+            )
+            .refreshToken(Jwts.builder()
+                .setClaims(refreshClaims)
+                .setExpiration(refreshTokenExpirationTime)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact()
+            )
+            .build();
     }
 
     public Authentication createAuthentication(String token) {
@@ -81,15 +99,17 @@ public class JwtProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
-    public boolean validate(String token) {
+    public TokenValidateResponse validate(String token) {
         try {
             Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token);
-            return true;
-        } catch (ExpiredJwtException | SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            return false;
+            return TokenValidateResponse.VALID;
+        } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            return TokenValidateResponse.INVALID;
+        } catch (ExpiredJwtException e) {
+            return TokenValidateResponse.EXPIRED;
         }
     }
 }

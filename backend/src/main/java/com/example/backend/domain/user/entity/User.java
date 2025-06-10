@@ -1,4 +1,4 @@
-package com.example.backend.domain.user.model;
+package com.example.backend.domain.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,7 +29,7 @@ public class User {
     @Column(nullable = false, updatable = false)
     private String email;
 
-    public static User create(String email) {
+    public static User from(String email) {
         User user = new User();
         user.email = email;
         user.role = Role.GENERAL;

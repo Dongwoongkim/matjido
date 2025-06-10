@@ -1,10 +1,12 @@
 package com.example.backend.global.config;
 
+import com.example.backend.global.filter.JwtFilter;
+import com.example.backend.global.handler.JwtAccessDeniedHandler;
+import com.example.backend.global.handler.JwtAuthenticationFailHandler;
 import com.example.backend.global.oauth.kakao.KakaoUserDetailsService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,10 +16,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 
 @Configuration
@@ -26,6 +28,9 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     private final KakaoUserDetailsService kakaoUserDetailsService;
+    private final JwtFilter jwtFilter;
+    private final JwtAuthenticationFailHandler jwtAuthenticationFailHandler;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     // 정적 리소스 무시 설정
     @Bean
@@ -44,9 +49,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .httpBasic(AbstractHttpConfigurer::disable)
+
             .cors(httpSecurityCorsConfigurer ->
                 httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
-            .httpBasic(AbstractHttpConfigurer::disable)
 
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement((sessionManagement) ->
@@ -56,20 +62,20 @@ public class SecurityConfig {
                 .requestMatchers("/user/logins").permitAll()
                 .anyRequest().authenticated()
             )
-            
+
             .oauth2Login(oAuth2Login -> {
                 oAuth2Login.userInfoEndpoint(userInfoEndpointConfig ->
                     userInfoEndpointConfig.userService(kakaoUserDetailsService));
+            })
+
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling(exceptionHandling -> {
+                exceptionHandling.authenticationEntryPoint(jwtAuthenticationFailHandler);
+                exceptionHandling.accessDeniedHandler(jwtAccessDeniedHandler);
+
             });
 
         return http.build();
-    }
-
-    @Bean
-    public FilterRegistrationBean<CorsFilter> corsFilter() {
-        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(corsConfigurationSource()));
-        bean.setOrder(0);
-        return bean;
     }
 
     /**

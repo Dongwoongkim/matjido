@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    include: secret
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3307/matjido
@@ -30,8 +33,3 @@ spring:
 logging:
   level:
     root: INFO
-
-#
-#jwt:
-#  secret_key: ${jwt.secret-key}
-#  access-token-validity-in-seconds: 1800

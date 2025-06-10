@@ -1,6 +1,6 @@
 package com.example.backend.global.oauth.kakao;
 
-import com.example.backend.domain.user.model.User;
+import com.example.backend.domain.user.entity.User;
 import com.example.backend.domain.user.repository.UserRepository;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class KakaoUserDetailsService extends DefaultOAuth2UserService {
         String email = new KakaoUserInfo(oauthUser.getAttributes()).getEmail();
 
         User user = userRepository.findByEmail(email)
-            .orElseGet(() -> userRepository.save(User.create(email)));
+            .orElseGet(() -> userRepository.save(User.from(email)));
 
         return KakaoUserDetails.of(
             user.getMemberId(),
