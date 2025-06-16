@@ -3,7 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - develop
+    - develop
+  pull_request:
+    branches:
+    - develop
 
 jobs:
   build:
@@ -38,7 +41,7 @@ jobs:
           echo "${{ secrets.ENV_VARS }}" >> .env 
           cd src/main/resources
           touch application_secret.yml 
-          echo "${{ secrets.SECURE_VARS }}" >> application_secret.yml   
+          echo "${{ secrets.SECURE_VARS }}" >> application-secret.yml   
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew

@@ -25,7 +25,7 @@ spring:
     defer-datasource-initialization: true
 
   config:
-    import: "classpath:application_secret.yml"  # application_secret.yml ?? ????
+    import: "classpath:application-secret.yml"
 
 logging:
   level:
