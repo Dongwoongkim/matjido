@@ -1,7 +1,6 @@
 spring:
   profiles:
     include: secret
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3307/matjido
@@ -30,6 +29,38 @@ spring:
   config:
     import: "classpath:application-secret.yml"
 
+  jwt:
+    secret-key: ENC(qdnP7JHlk4PtmL5KdlFJH79KTMXy4qDA)
+    access-token-validity-in-seconds: 1800
+    refresh-token-validity-in-seconds: 36400
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ENC(4awbxguvdkLdbo/+8ptTlLLWr8x306+rkT2VxBhvH/GFKJiMBQjTiNkcnEAbkHe6)
+            client-secret: ENC(nW3r5YODhKF3RS0ZAf+ZmvxJZnCNrkjLAGGjs6jkofFBG6Q6vqFQvx/2purL2xuk)
+            redirect-uri: ENC(9+Ym5hPSwF0sW6ahff/60tRqaSe79yFvL56j10+EQ2OhJ45RdGEgXLQeKFK/yY4rW7B8q6QBrPg1JFqoU5FCkA==)
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            client-name: kakao
+            scope:
+              - account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+
 logging:
   level:
-    root: INFO
+    root: DEBUG
+
+

@@ -24,6 +24,11 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
 
+        if (request.getRequestURI().startsWith("/api/user/kakao-login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         String accessToken = request.getHeader(AUTHORIZATION_HEADER);
 
         if (accessToken != null && !accessToken.isEmpty()) {

@@ -22,8 +22,7 @@ public class KakaoUserDetailsService extends DefaultOAuth2UserService {
         OAuth2User oauthUser = super.loadUser(request);
         String email = new KakaoUserInfo(oauthUser.getAttributes()).getEmail();
 
-        User user = userRepository.findByEmail(email)
-            .orElseGet(() -> userRepository.save(User.from(email)));
+        User user = userRepository.findByEmail(email).orElseThrow();
 
         return KakaoUserDetails.of(
             user.getMemberId(),

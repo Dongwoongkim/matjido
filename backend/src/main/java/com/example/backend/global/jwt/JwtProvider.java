@@ -1,8 +1,7 @@
 package com.example.backend.global.jwt;
 
-import com.example.backend.domain.user.entity.Role;
+import com.example.backend.domain.user.service.response.KakaoLoginResponse;
 import com.example.backend.global.oauth.kakao.KakaoUserDetails;
-import com.example.backend.global.response.TokenResponse;
 import com.example.backend.global.response.TokenValidateResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -34,9 +33,9 @@ public class JwtProvider implements InitializingBean {
     private Key key;
 
     public JwtProvider(
-        @Value("${jwt.secret-key}") String secretKey,
-        @Value("${jwt.access-token-validity-in-seconds}") long accessTokenExpirationSeconds,
-        @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenExpirationSeconds
+        @Value("${spring.jwt.secret-key}") String secretKey,
+        @Value("${spring.jwt.access-token-validity-in-seconds}") long accessTokenExpirationSeconds,
+        @Value("${spring.jwt.refresh-token-validity-in-seconds}") long refreshTokenExpirationSeconds
     ) {
         this.secretKey = secretKey;
         this.accessTokenExpirationMs = accessTokenExpirationSeconds * 1000;
@@ -49,7 +48,7 @@ public class JwtProvider implements InitializingBean {
         this.key = new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 
-    public TokenResponse generateAccessToken(Long memberId, String email, Role role) {
+    public KakaoLoginResponse issueToken(Long memberId, String email, String role) {
         Date now = new Date();
         Date accessTokenExpirationTime = new Date(now.getTime() + accessTokenExpirationMs);
         Date refreshTokenExpirationTime = new Date(now.getTime() + refreshTokenExpirationMs);
@@ -57,12 +56,12 @@ public class JwtProvider implements InitializingBean {
         Map<String, Object> accessClaims = new HashMap<>();
         accessClaims.put("MEMBER_ID", memberId);
         accessClaims.put("EMAIL", email);
-        accessClaims.put("AUTHORITY", role.name());
+        accessClaims.put("AUTHORITY", role);
 
         Map<String, Object> refreshClaims = new HashMap<>();
         refreshClaims.put("tokenType", "refresh");
 
-        return TokenResponse.builder().
+        return KakaoLoginResponse.builder().
             accessToken(Jwts.builder()
                 .setClaims(accessClaims)
                 .setExpiration(accessTokenExpirationTime)

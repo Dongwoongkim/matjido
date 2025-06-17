@@ -54,14 +54,14 @@ public class SecurityConfig {
             .cors(httpSecurityCorsConfigurer ->
                 httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
 
+            .authorizeHttpRequests((authz) -> authz
+                .requestMatchers("/api/user/kakao-login/callback").permitAll()
+                .anyRequest().authenticated()
+            )
+
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement((sessionManagement) ->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-            .authorizeHttpRequests((authz) -> authz
-                .requestMatchers("/user/logins").permitAll()
-                .anyRequest().authenticated()
-            )
 
             .oauth2Login(oAuth2Login -> {
                 oAuth2Login.userInfoEndpoint(userInfoEndpointConfig ->
