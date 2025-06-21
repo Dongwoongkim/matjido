@@ -4,8 +4,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3307/matjido
-    username: ENC(Ws5JbqTT5uKx7MHcKV9JmA==)
-    password: ENC(7JqtAw31LzbkYDi+aQkdBA==)
+    username: ENC(+Okc+NKtnZ7JVPyUPCLquw==)
+    password: ENC(xl4yVJDdT9stSX6hlaQu407NOQ51scZ1)
 
   jasypt:
     encryptor:
@@ -30,7 +30,7 @@ spring:
     import: "classpath:application-secret.yml"
 
   jwt:
-    secret-key: ENC(qdnP7JHlk4PtmL5KdlFJH79KTMXy4qDA)
+    secret-key: ENC(OF6b3eNhHFSXoEruLX89XERgbnvl3U2hg35fJ4qiCPZVahCs/XK0+1GEQgLHlNKyLlSoX4zBORQjyhRGmEWwu3cKkmiXJrhoM6a/K/YD4OmUpGO0jv6ZfqANgIHGwNdNk9Q/b3mkzR0=)
     access-token-validity-in-seconds: 1800
     refresh-token-validity-in-seconds: 36400
 
@@ -39,9 +39,9 @@ spring:
       client:
         registration:
           kakao:
-            client-id: ENC(4awbxguvdkLdbo/+8ptTlLLWr8x306+rkT2VxBhvH/GFKJiMBQjTiNkcnEAbkHe6)
-            client-secret: ENC(nW3r5YODhKF3RS0ZAf+ZmvxJZnCNrkjLAGGjs6jkofFBG6Q6vqFQvx/2purL2xuk)
-            redirect-uri: ENC(9+Ym5hPSwF0sW6ahff/60tRqaSe79yFvL56j10+EQ2OhJ45RdGEgXLQeKFK/yY4rW7B8q6QBrPg1JFqoU5FCkA==)
+            client-id: ENC(/PS8OpH2CogjwepMhvI1CD++4LOc4f7SV19gptdzmgJvHJuSO9KbS2xZK+neiV3H)
+            client-secret: ENC(JGO58qHMWF2pu+7ksU/lichYe43g63dSN4Sze53Mpab1tFIXMFQ8kdQu/AVXH662)
+            redirect-uri: "http://localhost:8080/api/user/kakao-login/callback"
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             client-name: kakao
@@ -61,6 +61,6 @@ spring:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
 
 

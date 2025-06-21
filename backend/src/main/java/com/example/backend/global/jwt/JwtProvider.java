@@ -9,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import java.security.Key;
 import java.util.Base64;
@@ -16,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,7 +45,7 @@ public class JwtProvider implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         byte[] keyBytes = Base64.getDecoder().decode(secretKey);
-        this.key = new SecretKeySpec(keyBytes, "HmacSHA256");
+        this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public KakaoLoginResponse issueToken(Long memberId, String email, String role) {

@@ -21,7 +21,6 @@ public class UserController {
     @GetMapping("/kakao-login/callback")
     public ResponseEntity<KakaoLoginResponse> loginKakao(@RequestParam(name = "code") String code)
         throws JsonProcessingException {
-        System.out.println(code);
         return new ResponseEntity<>(loginService.kakaoLogin(code), HttpStatus.OK);
     }
 }
