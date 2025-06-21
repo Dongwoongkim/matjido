@@ -1,8 +1,15 @@
 services:
+  my-server:
+    build: .
+    ports:
+      - ${EXTERNAL_APP_PORT}:${INTERNAL_APP_PORT}
+    depends_on:
+      - db
+      - redis
   db:
     image: mysql:8.0.32
     env_file:
-      - .env
+      - .env # env파일 명시적으로 설정 (자동으로 docker-compose에서 .env 읽어옵니다.)
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -10,7 +17,6 @@ services:
       - ${EXTERNAL_DB_PORT}:${INTERNAL_DB_PORT}
     volumes:
       - db-data:/var/lib/mysql
-
   redis:
     image: redis:7.0
     env_file:
@@ -23,3 +29,4 @@ services:
 volumes:
   db-data:
   redis-data:
+
