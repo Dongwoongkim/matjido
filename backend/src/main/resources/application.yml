@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(w/42Emgvde0KuhS1zqC/UJ7QXemH8rlTf+8ADw4X+xC76uXhHaiHWA==)
-    username: ENC(Ws5JbqTT5uKx7MHcKV9JmA==)
-    password: ENC(7JqtAw31LzbkYDi+aQkdBA==)
+    url: ENC(/4FdgNloaye9GbvbjOrPwN7NIuSu+5z8/CSWWtwJ8Vo2XeblFzhh9gEJA5htEucA)
+    username: ENC(+Okc+NKtnZ7JVPyUPCLquw==)
+    password: ENC(xl4yVJDdT9stSX6hlaQu407NOQ51scZ1)
 
   jasypt:
     encryptor:
