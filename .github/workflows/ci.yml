@@ -58,7 +58,7 @@ jobs:
         with:
           images: ${{ secrets.DOCKER_USERNAME }}/matjido-app
 
-      - name: Build and push
+      - name: Build docker image (no push)
         uses: docker/build-push-action@v2
         with:
           context: ./backend
