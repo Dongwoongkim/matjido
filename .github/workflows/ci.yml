@@ -37,11 +37,8 @@ jobs:
 
       - name: create env and secure file
         run: |
-          touch .env
-          echo "${{ secrets.ENV_VARS }}" >> .env 
-          cd src/main/resources
-          touch application_secret.yml 
-          echo "${{ secrets.SECURE_VARS }}" >> application-secret.yml   
+          echo "${{ secrets.ENV_VARS }}" > .env
+          echo "${{ secrets.SECURE_VARS }}" > src/main/resources/application-secret.yml
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
@@ -67,6 +64,6 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           platforms: linux/amd64
-          push: true
+          push: false
           tags: ${{ secrets.DOCKER_USERNAME }}/matjido-app:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
