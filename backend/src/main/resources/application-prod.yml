@@ -1,0 +1,32 @@
+server:
+  port: 443
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: # prod url
+    username: # prod username
+    password: # prod password
+
+  data:
+    redis:
+      host: ENC(nNs4NX4Zttm/oCIPCLVHJw==)
+      port: 6379
+
+  jpa:
+    open-in-view: false
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: false
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    defer-datasource-initialization: true
+
+  logging:
+    level:
+      root: WARN
