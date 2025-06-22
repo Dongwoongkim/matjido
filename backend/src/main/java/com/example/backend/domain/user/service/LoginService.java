@@ -6,10 +6,13 @@ import com.example.backend.domain.user.repository.UserRepository;
 import com.example.backend.domain.user.service.request.KakaoLoginRequest;
 import com.example.backend.domain.user.service.response.KakaoLoginResponse;
 import com.example.backend.global.jwt.JwtProvider;
+import com.example.backend.global.jwt.response.JwtValidateResponse;
+import com.example.backend.global.jwt.service.RedisService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -27,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 public class LoginService {
 
     private final UserRepository userRepository;
+    private final RedisService redisService;
     private final JwtProvider jwtProvider;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
@@ -48,6 +52,18 @@ public class LoginService {
                 userRepository.save(User.from(request.email())));
 
         return jwtProvider.issueToken(user.getMemberId(), user.getEmail(), user.getRole());
+    }
+
+    public void kakaoLogout(String accessToken) {
+        accessToken = accessToken.substring("Bearer ".length());
+
+        if (jwtProvider.validate(accessToken) == JwtValidateResponse.INVALID) {
+            throw new RuntimeException("Invalid access token");
+        }
+
+        // 남은 만료 시간 계산 (seconds)
+        long expiration = jwtProvider.getRemainingExpiration(accessToken);
+        redisService.setWithTTL("blacklist:" + accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
     }
 
     private String getAccessToken(String code) throws JsonProcessingException {

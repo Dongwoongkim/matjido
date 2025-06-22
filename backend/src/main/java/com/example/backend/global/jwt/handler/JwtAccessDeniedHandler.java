@@ -1,6 +1,5 @@
-package com.example.backend.global.handler;
+package com.example.backend.global.jwt.handler;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -11,9 +10,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
+    private static final String ACCESS_DENIED_ENTRY_POINT = "/api/exception/authentication/access-denied";
+
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
-        throws IOException, ServletException {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        throws IOException {
+        response.sendRedirect(ACCESS_DENIED_ENTRY_POINT);
+
     }
 }

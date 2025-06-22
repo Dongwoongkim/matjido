@@ -1,8 +1,8 @@
 package com.example.backend.global.config;
 
-import com.example.backend.global.filter.JwtFilter;
-import com.example.backend.global.handler.JwtAccessDeniedHandler;
-import com.example.backend.global.handler.JwtAuthenticationFailHandler;
+import com.example.backend.global.jwt.filter.JwtFilter;
+import com.example.backend.global.jwt.handler.JwtAccessDeniedHandler;
+import com.example.backend.global.jwt.handler.JwtAuthenticationFailHandler;
 import com.example.backend.global.oauth.kakao.KakaoUserDetailsService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +56,7 @@ public class SecurityConfig {
 
             .authorizeHttpRequests((authz) -> authz
                 .requestMatchers("/api/user/kakao-login/callback").permitAll()
+                .requestMatchers("/api/exception/**").permitAll()
                 .anyRequest().authenticated()
             )
 
@@ -72,7 +73,6 @@ public class SecurityConfig {
             .exceptionHandling(exceptionHandling -> {
                 exceptionHandling.authenticationEntryPoint(jwtAuthenticationFailHandler);
                 exceptionHandling.accessDeniedHandler(jwtAccessDeniedHandler);
-
             });
 
         return http.build();

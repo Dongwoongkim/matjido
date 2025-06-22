@@ -1,8 +1,8 @@
 package com.example.backend.global.jwt;
 
 import com.example.backend.domain.user.service.response.KakaoLoginResponse;
+import com.example.backend.global.jwt.response.JwtValidateResponse;
 import com.example.backend.global.oauth.kakao.KakaoUserDetails;
-import com.example.backend.global.response.TokenValidateResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -98,17 +98,28 @@ public class JwtProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
-    public TokenValidateResponse validate(String token) {
+    public JwtValidateResponse validate(String token) {
         try {
             Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token);
-            return TokenValidateResponse.VALID;
+            return JwtValidateResponse.VALID;
         } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            return TokenValidateResponse.INVALID;
+            return JwtValidateResponse.INVALID;
         } catch (ExpiredJwtException e) {
-            return TokenValidateResponse.EXPIRED;
+            return JwtValidateResponse.EXPIRED;
         }
+    }
+
+    public Long getRemainingExpiration(String token) {
+        Claims claims = Jwts.parserBuilder()
+            .setSigningKey(secretKey)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+        Date expiration = claims.getExpiration();              // 만료 시각
+        long now = System.currentTimeMillis();                 // 현재 시각
+        return expiration.getTime() - now;                     // 남은 시간 (ms)
     }
 }
