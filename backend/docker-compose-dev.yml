@@ -1,0 +1,25 @@
+services:
+  db:
+    image: mysql:8.0.32
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - ${EXTERNAL_DB_PORT}:${INTERNAL_DB_PORT}
+    volumes:
+      - db-data:/var/lib/mysql
+
+  redis:
+    image: redis:7.0
+    env_file:
+      - .env
+    ports:
+      - ${EXTERNAL_REDIS_PORT}:${INTERNAL_REDIS_PORT}
+    volumes:
+      - redis-data:/data
+
+volumes:
+  db-data:
+  redis-data:

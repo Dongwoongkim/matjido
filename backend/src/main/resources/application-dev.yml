@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ENC(/4FdgNloaye9GbvbjOrPwN7NIuSu+5z8/CSWWtwJ8Vo2XeblFzhh9gEJA5htEucA)
+    username: ENC(+Okc+NKtnZ7JVPyUPCLquw==)
+    password: ENC(xl4yVJDdT9stSX6hlaQu407NOQ51scZ1)
+
+  data:
+    redis:
+      host: ENC(WG74MTOrnoy3Bg6997kecMSy9HJ5OkPy)
+      port: 6379
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    defer-datasource-initialization: true
+
+  logging:
+    level:
+      root: INFO

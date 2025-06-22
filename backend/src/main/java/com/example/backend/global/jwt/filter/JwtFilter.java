@@ -48,7 +48,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (accessTokenValidateResponse == JwtValidateResponse.EXPIRED) {
                 // TODO : VALIDATE EXPIRE REFRESH-TOKEN ON REDIS BY ACCESS TOKEN
-                jwtProvider.validateExpireRefreshTokenFromAccessToken(accessToken);
 
             }
 
