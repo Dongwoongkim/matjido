@@ -1,18 +1,13 @@
 spring:
   profiles:
     include: secret
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(/4FdgNloaye9GbvbjOrPwN7NIuSu+5z8/CSWWtwJ8Vo2XeblFzhh9gEJA5htEucA)
-    username: ENC(+Okc+NKtnZ7JVPyUPCLquw==)
-    password: ENC(xl4yVJDdT9stSX6hlaQu407NOQ51scZ1)
     active: dev # aws ec2: prod
 
   jasypt:
     encryptor:
       bean: jasyptStringEncryptor
       password: ${ENCRYPT_KEY}
-
+  
   security:
     oauth2:
       client:
@@ -36,3 +31,7 @@ spring:
     secret-key: ENC(OF6b3eNhHFSXoEruLX89XERgbnvl3U2hg35fJ4qiCPZVahCs/XK0+1GEQgLHlNKyLlSoX4zBORQjyhRGmEWwu3cKkmiXJrhoM6a/K/YD4OmUpGO0jv6ZfqANgIHGwNdNk9Q/b3mkzR0=)
     access-token-validity-in-seconds: 1800
     refresh-token-validity-in-seconds: 36400
+
+logging:
+  level:
+    root: INFO
