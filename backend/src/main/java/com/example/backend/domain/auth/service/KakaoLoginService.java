@@ -1,11 +1,14 @@
-package com.example.backend.domain.user.service;
+package com.example.backend.domain.auth.service;
 
+import com.example.backend.domain.auth.exception.InvalidAccessTokenException;
+import com.example.backend.domain.auth.exception.InvalidAuthCodeException;
+import com.example.backend.domain.auth.service.request.KakaoLoginRequest;
+import com.example.backend.domain.auth.service.response.KakaoLoginResponse;
 import com.example.backend.domain.user.entity.User;
-import com.example.backend.domain.user.exception.InvalidAuthCodeException;
 import com.example.backend.domain.user.repository.UserRepository;
-import com.example.backend.domain.user.service.request.KakaoLoginRequest;
-import com.example.backend.domain.user.service.response.KakaoLoginResponse;
 import com.example.backend.global.jwt.JwtProvider;
+import com.example.backend.global.jwt.refreshtoken.RefreshToken;
+import com.example.backend.global.jwt.refreshtoken.repository.RefreshTokenRedisRepository;
 import com.example.backend.global.jwt.response.JwtValidateResponse;
 import com.example.backend.global.jwt.service.RedisService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,20 +21,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
-public class LoginService {
+public class KakaoLoginService {
 
-    private final UserRepository userRepository;
-    private final RedisService redisService;
     private final JwtProvider jwtProvider;
+    private final RedisService redisService;
+    private final UserRepository userRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String kakaoClientId;
@@ -43,7 +49,7 @@ public class LoginService {
     private String redirect_uri;
 
     @Transactional
-    public KakaoLoginResponse kakaoLogin(String code) throws JsonProcessingException {
+    public KakaoLoginResponse login(String code) throws JsonProcessingException {
         String accessToken = getAccessToken(code);
         KakaoLoginRequest request = getKakaoUserInfo(accessToken);
 
@@ -51,14 +57,23 @@ public class LoginService {
             .orElseGet(() ->
                 userRepository.save(User.from(request.email())));
 
-        return jwtProvider.issueToken(user.getMemberId(), user.getEmail(), user.getRole());
+        KakaoLoginResponse kakaoLoginResponse = jwtProvider.issueToken(user.getMemberId(), user.getEmail(), user.getRole());
+
+        refreshTokenRedisRepository.save(
+            RefreshToken.builder()
+                .email(request.email())
+                .refreshToken(kakaoLoginResponse.refreshToken())
+                .build()
+        );
+
+        return kakaoLoginResponse;
     }
 
-    public void kakaoLogout(String accessToken) {
+    public void logout(String accessToken) {
         accessToken = accessToken.substring("Bearer ".length());
 
         if (jwtProvider.validate(accessToken) == JwtValidateResponse.INVALID) {
-            throw new RuntimeException("Invalid access token");
+            throw new InvalidAccessTokenException();
         }
 
         // 남은 만료 시간 계산 (seconds)
@@ -67,27 +82,23 @@ public class LoginService {
     }
 
     private String getAccessToken(String code) throws JsonProcessingException {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+        RestClient restClient = RestClient.create();
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", kakaoClientId);
-        body.add("client_secret", kakaoClientSecret); // 추가
+        body.add("client_secret", kakaoClientSecret);  // 추가
         body.add("redirect_uri", redirect_uri);
         body.add("code", code);
 
-        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(body, headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(
-            "https://kauth.kakao.com/oauth/token",
-            HttpMethod.POST,
-            kakaoTokenRequest,
-            String.class
-        );
-
-        String responseBody = response.getBody();
+        String responseBody = restClient.post()
+            .uri("https://kauth.kakao.com/oauth/token")
+            .headers(headers -> {
+                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            })
+            .body(body)
+            .retrieve()
+            .body(String.class);
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);

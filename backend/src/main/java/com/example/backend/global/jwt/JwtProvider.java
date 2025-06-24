@@ -1,8 +1,8 @@
 package com.example.backend.global.jwt;
 
-import com.example.backend.domain.user.service.response.KakaoLoginResponse;
+import com.example.backend.domain.auth.service.response.KakaoLoginResponse;
 import com.example.backend.global.jwt.response.JwtValidateResponse;
-import com.example.backend.global.oauth.kakao.KakaoUserDetails;
+import com.example.backend.global.oauth.KakaoUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -54,12 +54,16 @@ public class JwtProvider implements InitializingBean {
         Date refreshTokenExpirationTime = new Date(now.getTime() + refreshTokenExpirationMs);
 
         Map<String, Object> accessClaims = new HashMap<>();
+        accessClaims.put("TOKEN_TYPE", "ACCESS_TOKEN");
         accessClaims.put("MEMBER_ID", memberId);
         accessClaims.put("EMAIL", email);
         accessClaims.put("AUTHORITY", role);
 
         Map<String, Object> refreshClaims = new HashMap<>();
-        refreshClaims.put("tokenType", "refresh");
+        refreshClaims.put("TOKEN_TYPE", "REFRESH_TOKEN");
+        refreshClaims.put("MEMBER_ID", memberId);
+        refreshClaims.put("EMAIL", email);
+        refreshClaims.put("AUTHORITY", role);
 
         return KakaoLoginResponse.builder().
             accessToken(Jwts.builder()
@@ -75,6 +79,22 @@ public class JwtProvider implements InitializingBean {
                 .compact()
             )
             .build();
+    }
+
+    public String issueNewAccessToken(String refreshToken) {
+        Date now = new Date();
+        Date accessTokenExpirationTime = new Date(now.getTime() + accessTokenExpirationMs);
+
+        Map<String, Object> accessClaims = new HashMap<>();
+        accessClaims.put("MEMBER_ID", getMemberId(refreshToken));
+        accessClaims.put("EMAIL", getEmail(refreshToken));
+        accessClaims.put("AUTHORITY", getAuthority(refreshToken));
+
+        return Jwts.builder()
+            .setClaims(accessClaims)
+            .setExpiration(accessTokenExpirationTime)
+            .signWith(key, SignatureAlgorithm.HS512)
+            .compact();
     }
 
     public Authentication createAuthentication(String token) {
@@ -112,14 +132,39 @@ public class JwtProvider implements InitializingBean {
         }
     }
 
+    public Long getMemberId(String token) {
+        return ((Number) parseClaims(token).get("MEMBER_ID")).longValue();
+    }
+
+    public String getEmail(String token) {
+        return parseClaims(token).get("EMAIL", String.class);
+    }
+
+    public String getAuthority(String token) {
+        return parseClaims(token).get("AUTHORITY", String.class);
+    }
+
     public Long getRemainingExpiration(String token) {
         Claims claims = Jwts.parserBuilder()
-            .setSigningKey(secretKey)
+            .setSigningKey(key)
             .build()
             .parseClaimsJws(token)
             .getBody();
-        Date expiration = claims.getExpiration();              // 만료 시각
-        long now = System.currentTimeMillis();                 // 현재 시각
-        return expiration.getTime() - now;                     // 남은 시간 (ms)
+
+        Date expiration = claims.getExpiration();
+        long now = System.currentTimeMillis();
+        return expiration.getTime() - now;
+    }
+
+    private Claims parseClaims(String token) {
+        try {
+            return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.backend.domain.user.service.response;
+package com.example.backend.domain.auth.service.response;
 
 import lombok.Builder;
 

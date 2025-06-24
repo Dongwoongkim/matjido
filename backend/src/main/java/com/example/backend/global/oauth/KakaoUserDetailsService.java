@@ -1,4 +1,4 @@
-package com.example.backend.global.oauth.kakao;
+package com.example.backend.global.oauth;
 
 import com.example.backend.domain.user.entity.User;
 import com.example.backend.domain.user.repository.UserRepository;

@@ -1,4 +1,4 @@
-package com.example.backend.global.jwt.handler;
+package com.example.backend.global.jwt.exception.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

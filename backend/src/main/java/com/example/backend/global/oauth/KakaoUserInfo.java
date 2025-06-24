@@ -1,4 +1,4 @@
-package com.example.backend.global.oauth.kakao;
+package com.example.backend.global.oauth;
 
 import java.util.Map;
 import lombok.RequiredArgsConstructor;

@@ -1,9 +1,9 @@
 package com.example.backend.global.config;
 
+import com.example.backend.global.jwt.exception.handler.JwtAccessDeniedHandler;
+import com.example.backend.global.jwt.exception.handler.JwtAuthenticationFailHandler;
 import com.example.backend.global.jwt.filter.JwtFilter;
-import com.example.backend.global.jwt.handler.JwtAccessDeniedHandler;
-import com.example.backend.global.jwt.handler.JwtAuthenticationFailHandler;
-import com.example.backend.global.oauth.kakao.KakaoUserDetailsService;
+import com.example.backend.global.oauth.KakaoUserDetailsService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -55,7 +55,7 @@ public class SecurityConfig {
                 httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
 
             .authorizeHttpRequests((authz) -> authz
-                .requestMatchers("/api/user/kakao-login/callback").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/exception/**").permitAll()
                 .anyRequest().authenticated()
             )

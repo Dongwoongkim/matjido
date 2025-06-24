@@ -1,6 +1,8 @@
 package com.example.backend.global.jwt.filter;
 
 import com.example.backend.global.jwt.JwtProvider;
+import com.example.backend.global.jwt.exception.LoggedOutTokenException;
+import com.example.backend.global.jwt.refreshtoken.repository.RefreshTokenRedisRepository;
 import com.example.backend.global.jwt.response.JwtValidateResponse;
 import com.example.backend.global.jwt.service.RedisService;
 import jakarta.servlet.FilterChain;
@@ -21,12 +23,13 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
 
-        if (request.getRequestURI().startsWith("/api/user/kakao-login")) {
+        if (request.getRequestURI().startsWith("/api/auth/kakao-login")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -39,7 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (accessTokenValidateResponse == JwtValidateResponse.VALID) {
                 if (redisService.hasKey("blacklist:" + accessToken)) {
-                    throw new RuntimeException("logged out access token");
+                    throw new LoggedOutTokenException();
                 }
 
                 Authentication authentication = jwtProvider.createAuthentication(accessToken);
@@ -47,8 +50,19 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
             if (accessTokenValidateResponse == JwtValidateResponse.EXPIRED) {
-                // TODO : VALIDATE EXPIRE REFRESH-TOKEN ON REDIS BY ACCESS TOKEN
+                String email = jwtProvider.getEmail(accessToken);
 
+                String refreshToken = refreshTokenRedisRepository.findById(email)
+                    .orElseThrow(
+                        () -> new RuntimeException("refresh token not found")
+                    ).getRefreshToken();
+
+                String newAccessToken = jwtProvider.issueNewAccessToken(refreshToken);
+
+                Authentication authentication = jwtProvider.createAuthentication(newAccessToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                response.setHeader("Authorization", "Bearer " + newAccessToken);
             }
 
             filterChain.doFilter(request, response);
