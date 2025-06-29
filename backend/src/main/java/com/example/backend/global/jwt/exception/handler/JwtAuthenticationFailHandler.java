@@ -10,11 +10,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtAuthenticationFailHandler implements AuthenticationEntryPoint {
 
-    private static final String EXCEPTION_ENTRY_POINT = "/api/exception/authentication/entry-point";
-
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException authException) throws IOException {
-        response.sendRedirect(EXCEPTION_ENTRY_POINT);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"message\": \"로그인이 필요한 요청입니다.\"}");
     }
 }

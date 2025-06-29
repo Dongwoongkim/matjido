@@ -22,9 +22,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
-@Configuration
-@EnableWebSecurity
 @RequiredArgsConstructor
+@EnableWebSecurity
+@Configuration
 public class SecurityConfig {
 
     private final KakaoUserDetailsService kakaoUserDetailsService;
@@ -32,20 +32,17 @@ public class SecurityConfig {
     private final JwtAuthenticationFailHandler jwtAuthenticationFailHandler;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    // 정적 리소스 무시 설정
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
-    // 비밀번호 암호화에 사용할 Bean
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 보안 설정을 위한 SecurityFilterChain 등록
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -78,9 +75,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * CORS CONFIG - 모든 출처(도메인)에서 오는 모든 HTTP 요청(GET, POST, PUT, DELETE, PATCH, OPTIONS)에 대해, CORS 요청 허용
-     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

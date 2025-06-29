@@ -2,6 +2,7 @@ package com.example.backend.domain.auth.service;
 
 import com.example.backend.domain.auth.exception.InvalidAccessTokenException;
 import com.example.backend.domain.auth.exception.InvalidAuthCodeException;
+import com.example.backend.domain.auth.exception.KakaoTokenRequestException;
 import com.example.backend.domain.auth.service.request.KakaoLoginRequest;
 import com.example.backend.domain.auth.service.response.KakaoLoginResponse;
 import com.example.backend.domain.user.entity.User;
@@ -10,7 +11,7 @@ import com.example.backend.global.jwt.JwtProvider;
 import com.example.backend.global.jwt.refreshtoken.RefreshToken;
 import com.example.backend.global.jwt.refreshtoken.repository.RefreshTokenRedisRepository;
 import com.example.backend.global.jwt.response.JwtValidateResponse;
-import com.example.backend.global.jwt.service.RedisService;
+import com.example.backend.global.jwt.service.LogoutTokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,12 +31,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class KakaoLoginService {
 
     private final JwtProvider jwtProvider;
-    private final RedisService redisService;
+    private final LogoutTokenService logoutTokenService;
     private final UserRepository userRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
@@ -46,7 +47,7 @@ public class KakaoLoginService {
     private String kakaoClientSecret;
 
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
-    private String redirect_uri;
+    private String redirectUri;
 
     @Transactional
     public KakaoLoginResponse login(String code) throws JsonProcessingException {
@@ -76,19 +77,18 @@ public class KakaoLoginService {
             throw new InvalidAccessTokenException();
         }
 
-        // 남은 만료 시간 계산 (seconds)
         long expiration = jwtProvider.getRemainingExpiration(accessToken);
-        redisService.setWithTTL("blacklist:" + accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+        logoutTokenService.setWithTTL("blacklist:" + accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
     }
 
-    private String getAccessToken(String code) throws JsonProcessingException {
+    private String getAccessToken(String code) {
         RestClient restClient = RestClient.create();
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", kakaoClientId);
         body.add("client_secret", kakaoClientSecret);  // 추가
-        body.add("redirect_uri", redirect_uri);
+        body.add("redirect_uri", redirectUri);
         body.add("code", code);
 
         String responseBody = restClient.post()
@@ -100,10 +100,13 @@ public class KakaoLoginService {
             .retrieve()
             .body(String.class);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(responseBody);
-
-        return jsonNode.get("access_token").asText();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(responseBody);
+            return jsonNode.get("access_token").asText();
+        } catch (JsonProcessingException e) {
+            throw new KakaoTokenRequestException();
+        }
     }
 
     private KakaoLoginRequest getKakaoUserInfo(final String token) throws JsonProcessingException {

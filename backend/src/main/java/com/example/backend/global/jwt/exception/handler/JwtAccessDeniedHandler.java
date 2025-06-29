@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
-    private static final String ACCESS_DENIED_ENTRY_POINT = "/api/exception/authentication/access-denied";
-
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
-        throws IOException {
-        response.sendRedirect(ACCESS_DENIED_ENTRY_POINT);
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"message\": \"접근 불가능한 권한입니다.\"}");
     }
 }
