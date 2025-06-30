@@ -1,4 +1,4 @@
-package com.example.backend.config;
+package com.example.backend.global.config;
 
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
@@ -14,7 +14,7 @@ public class JasyptConfig {
     private String ENCRYPT_KEY;
 
     @Bean("jasyptStringEncryptor")
-    public StringEncryptor stringEncryptor(){
+    public StringEncryptor stringEncryptor() {
         PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();
         config.setPassword(ENCRYPT_KEY);
