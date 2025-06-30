@@ -7,4 +7,31 @@ spring:
     encryptor:
       bean: jasyptStringEncryptor
       password: ${ENCRYPT_KEY}
+  
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ENC(/PS8OpH2CogjwepMhvI1CD++4LOc4f7SV19gptdzmgJvHJuSO9KbS2xZK+neiV3H)
+            client-secret: ENC(JGO58qHMWF2pu+7ksU/lichYe43g63dSN4Sze53Mpab1tFIXMFQ8kdQu/AVXH662)
+            redirect-uri: "http://localhost:8080/api/auth/kakao-login/callback"
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            client-name: kakao
+            scope:
+              - account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+  jwt:
+    secret-key: ENC(OF6b3eNhHFSXoEruLX89XERgbnvl3U2hg35fJ4qiCPZVahCs/XK0+1GEQgLHlNKyLlSoX4zBORQjyhRGmEWwu3cKkmiXJrhoM6a/K/YD4OmUpGO0jv6ZfqANgIHGwNdNk9Q/b3mkzR0=)
+    access-token-validity-in-seconds: 1800
+    refresh-token-validity-in-seconds: 36400
 
+logging:
+  level:
+    root: INFO
