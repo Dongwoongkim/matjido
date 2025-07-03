@@ -50,8 +50,8 @@ public class JwtFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                Authentication authentication = jwtProvider.createAuthentication(accessToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                Authentication auth = jwtProvider.createAuthentication(accessToken);
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
 
             if (accessTokenValidateResponse == JwtValidateResponse.EXPIRED) {
@@ -65,12 +65,9 @@ public class JwtFilter extends OncePerRequestFilter {
                     response.getWriter().write("{\"message\": \"재로그인이 필요한 요청입니다.\"}");
                     return;
                 }
-
                 String newAccessToken = jwtProvider.issueNewAccessToken(refreshToken.get().getRefreshToken());
-
                 Authentication authentication = jwtProvider.createAuthentication(newAccessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
                 response.setHeader("Authorization", "Bearer " + newAccessToken);
             }
         }
