@@ -22,7 +22,6 @@ public class Restaurant {
     @Column(name = "restaurant_id")
     private Long id;
 
-    private Long categoryId;
     private String placeName;
 
     @Embedded
@@ -32,8 +31,24 @@ public class Restaurant {
     private GeoLocation geoLocation;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+
+    private Restaurant(Category category, String placeName, Address address, GeoLocation geoLocation, User user) {
+        this.category = category;
+        this.placeName = placeName;
+        this.address = address;
+        this.geoLocation = geoLocation;
+        this.user = user;
+    }
+
+    public static Restaurant of(Category category, String placeName, Address address, GeoLocation geoLocation, User user) {
+        return new Restaurant(category, placeName, address, geoLocation, user);
+    }
 }
 
