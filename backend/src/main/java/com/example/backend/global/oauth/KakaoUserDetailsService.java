@@ -25,7 +25,7 @@ public class KakaoUserDetailsService extends DefaultOAuth2UserService {
         User user = userRepository.findByEmail(email).get();
 
         return KakaoUserDetails.of(
-            user.getMemberId(),
+            user.getId(),
             user.getEmail(),
             Collections.singletonList(new SimpleGrantedAuthority(user.getRole())),
             oauthUser.getAttributes()
