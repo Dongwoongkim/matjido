@@ -39,6 +39,7 @@ public class KakaoLoginService {
     private final LogoutTokenService logoutTokenService;
     private final UserRepository userRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+    private final RestTemplate restTemplate;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String kakaoClientId;
@@ -118,7 +119,6 @@ public class KakaoLoginService {
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(headers);
 
         try {
-            RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.exchange(
                 "https://kapi.kakao.com/v2/user/me",
                 HttpMethod.POST,
