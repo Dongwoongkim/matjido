@@ -25,6 +25,6 @@ public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResol
         NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         KakaoUserDetails userDetails = (KakaoUserDetails) authentication.getPrincipal();
-        return userDetails.getMemberId();
+        return userDetails.getId();
     }
 }

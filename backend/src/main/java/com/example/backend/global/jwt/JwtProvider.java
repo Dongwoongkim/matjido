@@ -48,20 +48,20 @@ public class JwtProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public KakaoLoginResponse issueToken(Long memberId, String email, String role) {
+    public KakaoLoginResponse issueToken(Long id, String email, String role) {
         Date now = new Date();
         Date accessTokenExpirationTime = new Date(now.getTime() + accessTokenExpirationMs);
         Date refreshTokenExpirationTime = new Date(now.getTime() + refreshTokenExpirationMs);
 
         Map<String, Object> accessClaims = new HashMap<>();
         accessClaims.put("TOKEN_TYPE", "ACCESS_TOKEN");
-        accessClaims.put("MEMBER_ID", memberId);
+        accessClaims.put("USER_ID", id);
         accessClaims.put("EMAIL", email);
         accessClaims.put("AUTHORITY", role);
 
         Map<String, Object> refreshClaims = new HashMap<>();
         refreshClaims.put("TOKEN_TYPE", "REFRESH_TOKEN");
-        refreshClaims.put("MEMBER_ID", memberId);
+        refreshClaims.put("USER_ID", id);
         refreshClaims.put("EMAIL", email);
         refreshClaims.put("AUTHORITY", role);
 
@@ -86,7 +86,7 @@ public class JwtProvider implements InitializingBean {
         Date accessTokenExpirationTime = new Date(now.getTime() + accessTokenExpirationMs);
 
         Map<String, Object> accessClaims = new HashMap<>();
-        accessClaims.put("MEMBER_ID", getMemberId(refreshToken));
+        accessClaims.put("USER_ID", getId(refreshToken));
         accessClaims.put("EMAIL", getEmail(refreshToken));
         accessClaims.put("AUTHORITY", getAuthority(refreshToken));
 
@@ -109,7 +109,7 @@ public class JwtProvider implements InitializingBean {
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(authority));
 
         KakaoUserDetails principal = KakaoUserDetails.of(
-            claims.get("MEMBER_ID", Long.class),
+            claims.get("USER_ID", Long.class),
             claims.get("EMAIL", String.class),
             authorities,
             Map.of()
@@ -132,8 +132,8 @@ public class JwtProvider implements InitializingBean {
         }
     }
 
-    public Long getMemberId(String token) {
-        return ((Number) parseClaims(token).get("MEMBER_ID")).longValue();
+    public Long getId(String token) {
+        return ((Number) parseClaims(token).get("USER_ID")).longValue();
     }
 
     public String getEmail(String token) {
