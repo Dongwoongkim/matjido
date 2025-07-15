@@ -14,7 +14,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KakaoUserDetails implements OAuth2User {
 
-    private Long memberId;
+    private Long id;
     private String email;
     private List<SimpleGrantedAuthority> authorities;
     private Map<String, Object> attributes;
@@ -29,9 +29,9 @@ public class KakaoUserDetails implements OAuth2User {
         return authorities;
     }
 
-    public static KakaoUserDetails of(Long memberId, String email, List<SimpleGrantedAuthority> authorities, Map<String, Object> attributes) {
+    public static KakaoUserDetails of(Long id, String email, List<SimpleGrantedAuthority> authorities, Map<String, Object> attributes) {
         KakaoUserDetails kakaoUserDetails = new KakaoUserDetails();
-        kakaoUserDetails.memberId = memberId;
+        kakaoUserDetails.id = id;
         kakaoUserDetails.email = email;
         kakaoUserDetails.authorities = authorities;
         kakaoUserDetails.attributes = attributes;
