@@ -34,9 +34,6 @@ public class CategoryService {
         Category category = categoryRepository.findByIdWithChildren(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        // lazyInitailizationException 임시 방편 -> 추후 개선
-//        initializeRecursively(category);
-
         return CategoryResponse.from(category);
     }
 
@@ -53,13 +50,4 @@ public class CategoryService {
     private boolean isRoot(Long parentId) {
         return parentId == null;
     }
-
-//    private void initializeRecursively(Category category) {
-//        if (category.getChildren() == null || category.getChildren().isEmpty()) return;
-//
-//        category.getChildren().size();
-//        for (Category child : category.getChildren()) {
-//            initializeRecursively(child);
-//        }
-//    }
 }
