@@ -58,7 +58,7 @@ public class KakaoLoginService {
             .orElseGet(() ->
                 userRepository.save(User.from(request.email())));
 
-        KakaoLoginResponse kakaoLoginResponse = jwtProvider.issueToken(user.getMemberId(), user.getEmail(), user.getRole());
+        KakaoLoginResponse kakaoLoginResponse = jwtProvider.issueToken(user.getId(), user.getEmail(), user.getRole());
 
         refreshTokenRedisRepository.save(
             RefreshToken.builder()
@@ -78,7 +78,7 @@ public class KakaoLoginService {
             .orElseGet(() ->
                 userRepository.save(User.from(request.email())));
 
-        KakaoLoginResponse kakaoLoginResponse = jwtProvider.issueToken(user.getMemberId(), user.getEmail(), user.getRole());
+        KakaoLoginResponse kakaoLoginResponse = jwtProvider.issueToken(user.getId(), user.getEmail(), user.getRole());
 
         refreshTokenRedisRepository.save(
             RefreshToken.builder()
