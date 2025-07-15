@@ -2,6 +2,7 @@ package com.example.backend.domain.restaurant.api;
 
 import com.example.backend.domain.restaurant.api.response.RestaurantResponse;
 import com.example.backend.domain.restaurant.api.response.RestaurantSearchResponse;
+import com.example.backend.domain.restaurant.api.response.RestaurantsResponse;
 import com.example.backend.domain.restaurant.service.RestaurantService;
 import com.example.backend.domain.restaurant.service.response.RestaurantCreateRequest;
 import com.example.backend.domain.restaurant.service.response.RestaurantSearchRequest;
@@ -24,26 +25,35 @@ public class RestaurantController {
 
     @GetMapping
     public ResponseEntity<RestaurantSearchResponse> searchRestaurants(
-            @Validated @ModelAttribute RestaurantSearchRequest request) {
-        return ResponseEntity.ok(restaurantService.search(request));
+            @Validated @ModelAttribute RestaurantSearchRequest restaurantSearchRequest) {
+        return ResponseEntity.ok(restaurantService.search(restaurantSearchRequest));
     }
 
     @PostMapping
-    public ResponseEntity<Void> addRestaurant(@RequestBody @Valid RestaurantCreateRequest request,
+    public ResponseEntity<Void> addRestaurant(@RequestBody @Valid RestaurantCreateRequest restaurantCreateRequest,
                                               @CurrentUserId Long userId) {
-        restaurantService.addRestaurant(userId, request);
+        restaurantService.addRestaurant(userId, restaurantCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }
 
     @GetMapping("/me")
-    public ResponseEntity<List<RestaurantResponse>> getRestaurantsByUserId(@CurrentUserId Long userId) {
+    public ResponseEntity<RestaurantsResponse> getRestaurantsByUserId(@CurrentUserId Long userId) {
         return ResponseEntity.ok(restaurantService.getRestaurantsByUserId(userId));
     }
 
     @GetMapping("/me/{restaurantId}")
     public ResponseEntity<RestaurantResponse> getRestaurantByUserId(@CurrentUserId Long userId,
-                                                              @PathVariable Long restaurantId) {
+                                                                    @PathVariable Long restaurantId) {
         return ResponseEntity.ok(restaurantService.getRestaurantByUserId(userId, restaurantId));
+    }
+
+    @DeleteMapping("/me/{restaurantId}")
+    public ResponseEntity<Void> deleteRestaurant(@CurrentUserId Long userId,
+                                                 @PathVariable Long restaurantId) {
+        restaurantService.deleteRestaurant(userId, restaurantId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.backend.domain.restaurant.api;
 
+import com.example.backend.domain.restaurant.api.response.CategoriesResponse;
 import com.example.backend.domain.restaurant.api.response.CategoryResponse;
 import com.example.backend.domain.restaurant.entity.Category;
 import com.example.backend.domain.restaurant.service.CategoryService;
@@ -20,20 +21,28 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<CategoryResponse> createCategory(@RequestBody @Valid CategoryCreateRequest request) {
-        Category category = categoryService.createCategory(request.name(), request.parentId());
+    public ResponseEntity<Void> createCategory(
+            @RequestBody @Valid CategoryCreateRequest categoryCreateRequest) {
+        categoryService.createCategory(categoryCreateRequest.name(), categoryCreateRequest.parentId());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CategoryResponse.from(category));
+                .build();
     }
 
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryResponse> getCategory(@PathVariable Long categoryId) {
-        CategoryResponse response = categoryService.getCategory(categoryId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(categoryService.getCategory(categoryId));
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponse>> getCategories() {
+    public ResponseEntity<CategoriesResponse> getCategories() {
         return ResponseEntity.ok(categoryService.getCategories());
+    }
+
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
+        categoryService.deleteCategory(categoryId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }

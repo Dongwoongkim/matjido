@@ -1,5 +1,6 @@
 package com.example.backend.domain.restaurant.service;
 
+import com.example.backend.domain.restaurant.api.response.CategoriesResponse;
 import com.example.backend.domain.restaurant.api.response.CategoryResponse;
 import com.example.backend.domain.restaurant.entity.Category;
 import com.example.backend.domain.restaurant.exception.CategoryNotFoundException;
@@ -15,10 +16,10 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public Category createCategory(String name, Long parentId) {
-        Category parent = (parentId != null) ? findParent(parentId) : null;
+    public void createCategory(String name, Long parentId) {
+        Category parent = isRoot(parentId) ? null : findParent(parentId);
         Category category = Category.of(name, parent);
-        return categoryRepository.save(category);
+        categoryRepository.save(category);
     }
 
     private Category findParent(Long parentId) {
@@ -32,10 +33,16 @@ public class CategoryService {
         return CategoryResponse.from(category);
     }
 
-    public List<CategoryResponse> getCategories() {
+    public CategoriesResponse getCategories() {
         List<Category> allCategories = categoryRepository.findAllCategories();
-        return allCategories.stream()
-                .map(CategoryResponse::from)
-                .toList();
+        return CategoriesResponse.from(allCategories);
+    }
+
+    public void deleteCategory(Long categoryId) {
+        categoryRepository.deleteById(categoryId);
+    }
+
+    private boolean isRoot(Long parentId) {
+        return parentId == null;
     }
 }

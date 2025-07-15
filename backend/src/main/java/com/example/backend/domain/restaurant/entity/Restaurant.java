@@ -32,6 +32,7 @@ public class Restaurant {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
