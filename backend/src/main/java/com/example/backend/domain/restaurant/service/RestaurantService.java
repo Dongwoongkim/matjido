@@ -19,10 +19,12 @@ import com.example.backend.domain.user.exception.UserNotFoundException;
 import com.example.backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class RestaurantService {
 
@@ -35,6 +37,7 @@ public class RestaurantService {
         return kakaoSearchApiClient.searchRestaurants(restaurantSearchRequest);
     }
 
+    @Transactional
     public void addRestaurant(Long userId, RestaurantCreateRequest restaurantCreateRequest) {
         User user = findUser(userId);
 
@@ -62,6 +65,7 @@ public class RestaurantService {
         return RestaurantResponse.from(restaurant);
     }
 
+    @Transactional
     public void deleteRestaurant(Long userId, Long restaurantId) {
         Restaurant restaurant = findRestaurant(restaurantId, userId);
         restaurantRepository.delete(restaurant);

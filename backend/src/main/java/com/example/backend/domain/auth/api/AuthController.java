@@ -26,6 +26,12 @@ public class AuthController {
         return new ResponseEntity<>(kakaoLoginService.login(code), HttpStatus.OK);
     }
 
+    @GetMapping("/kakao-login/postman/callback")
+    public ResponseEntity<KakaoLoginResponse> loginForPostman(@RequestParam(name = "accessToken") String accessToken)
+        throws JsonProcessingException {
+        return new ResponseEntity<>(kakaoLoginService.loginForPostman(accessToken), HttpStatus.OK);
+    }
+
     @PostMapping("/kakao-logout")
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") String accessToken) {
         kakaoLoginService.logout(accessToken);
