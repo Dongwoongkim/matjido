@@ -4,10 +4,7 @@ import com.example.backend.domain.restaurant.entity.vo.Address;
 import com.example.backend.domain.restaurant.entity.vo.GeoLocation;
 import com.example.backend.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -40,16 +37,13 @@ public class Restaurant {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
+    @Builder
     private Restaurant(Category category, String placeName, Address address, GeoLocation geoLocation, User user) {
         this.category = category;
         this.placeName = placeName;
         this.address = address;
         this.geoLocation = geoLocation;
         this.user = user;
-    }
-
-    public static Restaurant of(Category category, String placeName, Address address, GeoLocation geoLocation, User user) {
-        return new Restaurant(category, placeName, address, geoLocation, user);
     }
 }
 

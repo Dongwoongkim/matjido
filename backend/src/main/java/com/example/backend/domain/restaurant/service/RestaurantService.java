@@ -44,13 +44,13 @@ public class RestaurantService {
         Category category = categoryRepository.findById(restaurantCreateRequest.categoryId())
                 .orElseThrow(() -> new CategoryNotFoundException(restaurantCreateRequest.categoryId()));
 
-        Restaurant restaurant = Restaurant.of(
-                category,
-                restaurantCreateRequest.placeName(),
-                Address.from(restaurantCreateRequest.roadAddressName()),
-                GeoLocation.of(restaurantCreateRequest.longitude(), restaurantCreateRequest.latitude()),
-                user
-        );
+        Restaurant restaurant = Restaurant.builder()
+                .category(category)
+                .placeName(restaurantCreateRequest.placeName())
+                .address(Address.from(restaurantCreateRequest.roadAddressName()))
+                .geoLocation(GeoLocation.of(restaurantCreateRequest.longitude(), restaurantCreateRequest.latitude()))
+                .user(user)
+                .build();
 
         restaurantRepository.save(restaurant);
     }
