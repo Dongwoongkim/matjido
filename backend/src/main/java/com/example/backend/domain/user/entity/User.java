@@ -20,8 +20,8 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
-    private Long memberId;
+    @Column(name = "user_id")
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     private Role role;

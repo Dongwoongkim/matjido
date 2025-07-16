@@ -58,7 +58,27 @@ public class KakaoLoginService {
             .orElseGet(() ->
                 userRepository.save(User.from(request.email())));
 
-        KakaoLoginResponse kakaoLoginResponse = jwtProvider.issueToken(user.getMemberId(), user.getEmail(), user.getRole());
+        KakaoLoginResponse kakaoLoginResponse = jwtProvider.issueToken(user.getId(), user.getEmail(), user.getRole());
+
+        refreshTokenRedisRepository.save(
+            RefreshToken.builder()
+                .email(request.email())
+                .refreshToken(kakaoLoginResponse.refreshToken())
+                .build()
+        );
+
+        return kakaoLoginResponse;
+    }
+
+    @Transactional
+    public KakaoLoginResponse loginForPostman(String accessToken) throws JsonProcessingException {
+        KakaoLoginRequest request = getKakaoUserInfo(accessToken);
+
+        User user = userRepository.findByEmail(request.email())
+            .orElseGet(() ->
+                userRepository.save(User.from(request.email())));
+
+        KakaoLoginResponse kakaoLoginResponse = jwtProvider.issueToken(user.getId(), user.getEmail(), user.getRole());
 
         refreshTokenRedisRepository.save(
             RefreshToken.builder()
