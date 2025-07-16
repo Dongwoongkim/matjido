@@ -14,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RequestMapping("/api/restaurants")
 @RequiredArgsConstructor
 @RestController
@@ -23,7 +21,7 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<RestaurantSearchResponse> searchRestaurants(
             @Validated @ModelAttribute RestaurantSearchRequest restaurantSearchRequest) {
         return ResponseEntity.ok(restaurantService.search(restaurantSearchRequest));
@@ -37,18 +35,18 @@ public class RestaurantController {
                 .build();
     }
 
-    @GetMapping("/me")
+    @GetMapping
     public ResponseEntity<RestaurantsResponse> getRestaurantsByUserId(@CurrentUserId Long userId) {
         return ResponseEntity.ok(restaurantService.getRestaurantsByUserId(userId));
     }
 
-    @GetMapping("/me/{restaurantId}")
+    @GetMapping("/{restaurantId}")
     public ResponseEntity<RestaurantResponse> getRestaurantByUserId(@CurrentUserId Long userId,
                                                                     @PathVariable Long restaurantId) {
         return ResponseEntity.ok(restaurantService.getRestaurantByUserId(userId, restaurantId));
     }
 
-    @DeleteMapping("/me/{restaurantId}")
+    @DeleteMapping("/{restaurantId}")
     public ResponseEntity<Void> deleteRestaurant(@CurrentUserId Long userId,
                                                  @PathVariable Long restaurantId) {
         restaurantService.deleteRestaurant(userId, restaurantId);
