@@ -17,13 +17,13 @@ public record RestaurantResponse(
         return new RestaurantResponse(
                 restaurant.getId(),
                 restaurant.getPlaceName(),
-                restaurant.getAddress().getCity(),
-                restaurant.getAddress().getDistrict(),
-                restaurant.getAddress().getRoadName(),
-                restaurant.getGeoLocation().getLongitude(),
-                restaurant.getGeoLocation().getLatitude(),
-                restaurant.getCategory().getId(),
-                restaurant.getCategory().getName()
+                restaurant.getCity(),
+                restaurant.getDistrict(),
+                restaurant.getRoadName(),
+                restaurant.getLongitude(),
+                restaurant.getLatitude(),
+                restaurant.getCategoryId(),
+                restaurant.getCategoryName()
         );
     }
 }

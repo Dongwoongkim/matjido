@@ -45,5 +45,33 @@ public class Restaurant {
         this.geoLocation = geoLocation;
         this.user = user;
     }
+
+    public String getCategoryName() {
+        return category.getName();
+    }
+
+    public Long getCategoryId() {
+        return category.getId();
+    }
+
+    public String getCity() {
+        return address.getCity();
+    }
+
+    public String getDistrict() {
+        return address.getDistrict();
+    }
+
+    public String getRoadName() {
+        return address.getRoadName();
+    }
+
+    public String getLongitude() {
+        return geoLocation.getLongitude();
+    }
+
+    public String getLatitude() {
+        return geoLocation.getLatitude();
+    }
 }
 
