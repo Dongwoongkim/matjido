@@ -15,7 +15,7 @@ public class GeoLocation {
     private String longitude;
     private String latitude;
 
-    public static GeoLocation of(String x, String y) {
-        return new GeoLocation(x, y);
+    public static GeoLocation of(String longitude, String latitude) {
+        return new GeoLocation(longitude, latitude);
     }
 }

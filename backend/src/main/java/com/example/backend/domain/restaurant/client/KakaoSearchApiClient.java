@@ -1,6 +1,6 @@
 package com.example.backend.domain.restaurant.client;
 
-import com.example.backend.domain.restaurant.api.response.RestaurantSearchResponse;
+import com.example.backend.domain.restaurant.api.response.KakaoPlacesSearchResponse;
 import com.example.backend.domain.restaurant.service.response.RestaurantSearchRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class KakaoSearchApiClient {
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String restApiKey;
 
-    public RestaurantSearchResponse searchRestaurants(RestaurantSearchRequest request) {
+    public KakaoPlacesSearchResponse searchRestaurants(RestaurantSearchRequest request) {
         try {
             String uri = UriComponentsBuilder.fromUriString(KEYWORD_SEARCH_URL)
                     .queryParam("query", request.query())
@@ -33,10 +33,10 @@ public class KakaoSearchApiClient {
                     .defaultHeader("Authorization", "Bearer " + restApiKey)
                     .build();
 
-            RestaurantSearchResponse response = restClient.get()
+            KakaoPlacesSearchResponse response = restClient.get()
                     .uri(uri)
                     .retrieve()
-                    .body(RestaurantSearchResponse.class);
+                    .body(KakaoPlacesSearchResponse.class);
 
             return response;
 

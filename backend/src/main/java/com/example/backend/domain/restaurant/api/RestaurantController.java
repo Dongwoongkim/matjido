@@ -1,7 +1,7 @@
 package com.example.backend.domain.restaurant.api;
 
+import com.example.backend.domain.restaurant.api.response.KakaoPlacesSearchResponse;
 import com.example.backend.domain.restaurant.api.response.RestaurantResponse;
-import com.example.backend.domain.restaurant.api.response.RestaurantSearchResponse;
 import com.example.backend.domain.restaurant.api.response.RestaurantsResponse;
 import com.example.backend.domain.restaurant.service.RestaurantService;
 import com.example.backend.domain.restaurant.service.response.RestaurantCreateRequest;
@@ -22,7 +22,7 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @GetMapping("/search")
-    public ResponseEntity<RestaurantSearchResponse> searchRestaurants(
+    public ResponseEntity<KakaoPlacesSearchResponse> searchRestaurants(
             @Validated @ModelAttribute RestaurantSearchRequest restaurantSearchRequest) {
         return ResponseEntity.ok(restaurantService.search(restaurantSearchRequest));
     }
