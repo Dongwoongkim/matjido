@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,27 +26,24 @@ public class KakaoSearchApiClient {
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String restApiKey;
 
-    private final RestTemplate restTemplate;
-
     public RestaurantSearchResponse searchRestaurants(RestaurantSearchRequest request) {
         try {
-            UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(KEYWORD_SEARCH_URL)
+            String uri = UriComponentsBuilder.fromUriString(KEYWORD_SEARCH_URL)
                     .queryParam("query", request.query())
-                    .queryParam("category_group_code", RESTAURANT_GROUP_CODE);
+                    .queryParam("category_group_code", RESTAURANT_GROUP_CODE)
+                    .build()
+                    .toUriString();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "KakaoAK " + restApiKey);
+            RestClient restClient = RestClient.builder()
+                    .defaultHeader("Authorization", "Bearer " + restApiKey)
+                    .build();
 
-            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            RestaurantSearchResponse response = restClient.get()
+                    .uri(uri)
+                    .retrieve()
+                    .body(RestaurantSearchResponse.class);
 
-            ResponseEntity<RestaurantSearchResponse> response = restTemplate.exchange(
-                    uriBuilder.build().toUriString(),
-                    HttpMethod.GET,
-                    entity,
-                    RestaurantSearchResponse.class
-            );
-
-            return response.getBody();
+            return response;
 
         } catch (RestClientException e) {
             log.error("exception: {}", e.getMessage(), e);
