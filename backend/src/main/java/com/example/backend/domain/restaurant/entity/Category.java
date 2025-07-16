@@ -41,9 +41,11 @@ public class Category {
     }
 
     public static Category of(String name, Category parent) {
-        int depth = (parent != null) ? parent.getDepth() + 1 : 1;
+        final int MIN_DEPTH = 1;
+        final int MAX_DEPTH = 3;
+        int depth = (parent != null) ? parent.getDepth() + 1 : MIN_DEPTH;
 
-        if (depth < 1 || depth > 3) {
+        if (depth > MAX_DEPTH) {
             throw new CategoryDepthExceededException(depth);
         }
 

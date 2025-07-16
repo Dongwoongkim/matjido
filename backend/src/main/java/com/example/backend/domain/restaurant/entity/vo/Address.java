@@ -1,6 +1,5 @@
 package com.example.backend.domain.restaurant.entity.vo;
 
-import com.example.backend.domain.restaurant.exception.InvalidAddressFormatException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,37 +24,40 @@ public class Address {
     }
 
     public static Address from(String roadAddressName) {
-        if (roadAddressName == null || roadAddressName.isBlank()) {
-            throw new InvalidAddressFormatException("도로명 주소가 비어있습니다.");
+        String[] parts = splitAddress(roadAddressName);
+        String first = parts[0];
+
+        if(isTwoLevelCity(first)) {
+            return parseTwoLevelAddress(parts);
         }
 
-        String[] parts = roadAddressName.trim().split("\\s+");
-        if (parts.length < 3) {
-            throw new InvalidAddressFormatException("도로명 주소 형식이 올바르지 않습니다: " + roadAddressName);
-        }
+        return parseProvinceLevelAddress(parts);
+    }
 
+    private static String[] splitAddress(String roadAddressName) {
+        final String WHITESPACE_REGEX = "\\s+";
+        String[] parts = roadAddressName.trim().split(WHITESPACE_REGEX);
+        return parts;
+    }
+
+    private static boolean isTwoLevelCity(String cityName) {
         final List<String> TWO_LEVEL_CITIES = List.of(
                 "서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종"
         );
+        return TWO_LEVEL_CITIES.contains(cityName);
+    }
 
-        String first = parts[0];
+    private static Address parseTwoLevelAddress(String[] parts) {
+        String city = parts[0];
+        String district = parts[1];
+        String roadName = String.join(" ", Arrays.copyOfRange(parts, 2, parts.length));
+        return of(city, district, roadName);
+    }
 
-        String city;
-        String district;
-        String roadName;
-
-        // 특별시 / 광역시 / 세종시 : ex. 서울 관악구
-        if (TWO_LEVEL_CITIES.contains(first)) {
-            city = first;
-            district = parts[1];
-            roadName = String.join(" ", Arrays.copyOfRange(parts, 2, parts.length));
-        } else {
-            // 도 단위 주소: ex. 경기 수원시 팔달구
-            city = first + " " + parts[1];
-            district = parts[2];
-            roadName = String.join(" ", Arrays.copyOfRange(parts, 2, parts.length));
-        }
-
+    private static Address parseProvinceLevelAddress(String[] parts) {
+        String city = parts[0] + " " + parts[1];
+        String district = parts[2];
+        String roadName = String.join(" ", Arrays.copyOfRange(parts, 3, parts.length));
         return of(city, district, roadName);
     }
 }
