@@ -30,7 +30,7 @@ public class KakaoSearchApiClient {
                     .toUriString();
 
             RestClient restClient = RestClient.builder()
-                    .defaultHeader("Authorization", "Bearer " + restApiKey)
+                    .defaultHeader("Authorization", "KakaoAK " + restApiKey)
                     .build();
 
             KakaoPlacesSearchResponse response = restClient.get()
