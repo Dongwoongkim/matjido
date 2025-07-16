@@ -33,8 +33,8 @@ public class RestaurantService {
     private final CategoryRepository categoryRepository;
     private final KakaoSearchApiClient kakaoSearchApiClient;
 
-    public KakaoPlacesSearchResponse search(RestaurantSearchRequest restaurantSearchRequest) {
-        return kakaoSearchApiClient.searchRestaurants(restaurantSearchRequest);
+    public KakaoPlacesSearchResponse search(String query) {
+        return kakaoSearchApiClient.searchRestaurants(query);
     }
 
     @Transactional

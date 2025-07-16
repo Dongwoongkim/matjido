@@ -22,9 +22,8 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @GetMapping("/search")
-    public ResponseEntity<KakaoPlacesSearchResponse> searchRestaurants(
-            @Validated @ModelAttribute RestaurantSearchRequest restaurantSearchRequest) {
-        return ResponseEntity.ok(restaurantService.search(restaurantSearchRequest));
+    public ResponseEntity<KakaoPlacesSearchResponse> searchRestaurants(@RequestParam("query") String query) {
+        return ResponseEntity.ok(restaurantService.search(query));
     }
 
     @PostMapping

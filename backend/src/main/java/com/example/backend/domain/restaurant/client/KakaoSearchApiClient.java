@@ -21,10 +21,10 @@ public class KakaoSearchApiClient {
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String restApiKey;
 
-    public KakaoPlacesSearchResponse searchRestaurants(RestaurantSearchRequest request) {
+    public KakaoPlacesSearchResponse searchRestaurants(String query) {
         try {
             String uri = UriComponentsBuilder.fromUriString(KEYWORD_SEARCH_URL)
-                    .queryParam("query", request.query())
+                    .queryParam("query", query)
                     .queryParam("category_group_code", RESTAURANT_GROUP_CODE)
                     .build()
                     .toUriString();
