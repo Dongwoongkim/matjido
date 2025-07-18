@@ -5,13 +5,11 @@ import com.example.backend.domain.restaurant.api.response.RestaurantResponse;
 import com.example.backend.domain.restaurant.api.response.RestaurantsResponse;
 import com.example.backend.domain.restaurant.service.RestaurantService;
 import com.example.backend.domain.restaurant.service.response.RestaurantCreateRequest;
-import com.example.backend.domain.restaurant.service.response.RestaurantSearchRequest;
 import com.example.backend.global.annotation.CurrentUserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/restaurants")

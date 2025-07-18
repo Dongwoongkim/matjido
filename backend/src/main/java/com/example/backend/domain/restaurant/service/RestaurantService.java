@@ -13,7 +13,6 @@ import com.example.backend.domain.restaurant.exception.RestaurantNotFoundExcepti
 import com.example.backend.domain.restaurant.repository.CategoryRepository;
 import com.example.backend.domain.restaurant.repository.RestaurantRepository;
 import com.example.backend.domain.restaurant.service.response.RestaurantCreateRequest;
-import com.example.backend.domain.restaurant.service.response.RestaurantSearchRequest;
 import com.example.backend.domain.user.entity.User;
 import com.example.backend.domain.user.exception.UserNotFoundException;
 import com.example.backend.domain.user.repository.UserRepository;

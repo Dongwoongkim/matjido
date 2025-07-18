@@ -2,7 +2,6 @@ package com.example.backend.domain.restaurant.api;
 
 import com.example.backend.domain.restaurant.api.response.CategoriesResponse;
 import com.example.backend.domain.restaurant.api.response.CategoryResponse;
-import com.example.backend.domain.restaurant.entity.Category;
 import com.example.backend.domain.restaurant.service.CategoryService;
 import com.example.backend.domain.restaurant.service.response.CategoryCreateRequest;
 import jakarta.validation.Valid;

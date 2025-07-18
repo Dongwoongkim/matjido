@@ -1,7 +1,6 @@
 package com.example.backend.domain.restaurant.client;
 
 import com.example.backend.domain.restaurant.api.response.KakaoPlacesSearchResponse;
-import com.example.backend.domain.restaurant.service.response.RestaurantSearchRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
