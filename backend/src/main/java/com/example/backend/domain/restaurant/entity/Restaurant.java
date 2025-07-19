@@ -29,7 +29,7 @@ public class Restaurant {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
