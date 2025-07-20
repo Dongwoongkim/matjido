@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,6 +19,8 @@ import java.util.Set;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Entity
+@SQLDelete(sql = "UPDATE category SET is_deleted = true WHERE category_id = ?")
+@Where(clause = "is_deleted = false")
 public class Category {
 
     @Id
@@ -26,13 +30,15 @@ public class Category {
 
     private String name;
     private int depth;
+    private boolean isDeleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Category> children = new HashSet<>();
+
 
     private Category(String name, Category parent, int depth) {
         this.name = name;
