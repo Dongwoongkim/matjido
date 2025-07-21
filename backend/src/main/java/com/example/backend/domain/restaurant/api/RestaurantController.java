@@ -2,12 +2,15 @@ package com.example.backend.domain.restaurant.api;
 
 import com.example.backend.domain.restaurant.api.response.KakaoPlacesSearchResponse;
 import com.example.backend.domain.restaurant.api.response.RestaurantResponse;
+import com.example.backend.domain.restaurant.api.response.RestaurantsPaginatedResponse;
 import com.example.backend.domain.restaurant.api.response.RestaurantsResponse;
+import com.example.backend.domain.restaurant.entity.Restaurant;
 import com.example.backend.domain.restaurant.service.RestaurantService;
 import com.example.backend.domain.restaurant.service.response.RestaurantCreateRequest;
 import com.example.backend.global.annotation.CurrentUserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +36,12 @@ public class RestaurantController {
     }
 
     @GetMapping
-    public ResponseEntity<RestaurantsResponse> getRestaurantsByUserId(@CurrentUserId Long userId) {
-        return ResponseEntity.ok(restaurantService.getRestaurantsByUserId(userId));
+    public ResponseEntity<RestaurantsPaginatedResponse> getRestaurantsByUserId(
+            @CurrentUserId Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(restaurantService.getRestaurantsByUserId(userId, page, size));
     }
 
     @GetMapping("/{restaurantId}")
