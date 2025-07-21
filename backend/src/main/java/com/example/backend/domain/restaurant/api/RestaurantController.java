@@ -39,9 +39,10 @@ public class RestaurantController {
     public ResponseEntity<RestaurantsPaginatedResponse> getRestaurantsByUserId(
             @CurrentUserId Long userId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String categoryName
     ) {
-        return ResponseEntity.ok(restaurantService.getRestaurantsByUserId(userId, page, size));
+        return ResponseEntity.ok(restaurantService.getRestaurantsByUserId(userId, categoryName, page, size));
     }
 
     @GetMapping("/{restaurantId}")

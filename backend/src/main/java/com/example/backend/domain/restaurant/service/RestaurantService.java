@@ -64,10 +64,14 @@ public class RestaurantService {
         return RestaurantsResponse.from(restaurants);
     }
 
-    public RestaurantsPaginatedResponse getRestaurantsByUserId(Long userId, int page, int size) {
+    public RestaurantsPaginatedResponse getRestaurantsByUserId(Long userId, String categoryName, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
-        Page<Restaurant> restaurants = restaurantRepository.findAllByUserId(userId, pageable);
-        return RestaurantsPaginatedResponse.from(restaurants);
+
+        if (categoryName != null && !categoryName.isBlank()) {
+            return RestaurantsPaginatedResponse.from(restaurantRepository.findByUserIdAndCategoryName(userId, categoryName, pageable));
+        }
+
+        return RestaurantsPaginatedResponse.from(restaurantRepository.findAllByUserId(userId, pageable));
     }
 
     public RestaurantResponse getRestaurantByUserId(Long userId, Long restaurantId) {
