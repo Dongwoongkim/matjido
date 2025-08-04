@@ -50,6 +50,10 @@ dependencies {
     /* AOP 추가 시작 */
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     /* AOP 추가 끝 */
+
+    /* API RateLimiter 추가 시작 */
+    implementation 'com.google.guava:guava:33.4.8-jre'
+    /* API RateLimiter 추가 끝*/
 }
 
 tasks.named('test') {
