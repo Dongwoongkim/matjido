@@ -27,6 +27,10 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     defer-datasource-initialization: true
 
-  logging:
-    level:
-      root: INFO
+logging:
+  level:
+    root: debug
+
+rate:
+  limit:
+    enabled: false
