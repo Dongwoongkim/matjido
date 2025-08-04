@@ -19,17 +19,12 @@ import jakarta.transaction.Transactional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
 @RequiredArgsConstructor
 @Service
@@ -129,28 +124,26 @@ public class KakaoLoginService {
         }
     }
 
-    private KakaoLoginRequest getKakaoUserInfo(final String token) throws JsonProcessingException {
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.add("Authorization", "Bearer " + token);
-        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
-
-        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(headers);
+    private KakaoLoginRequest getKakaoUserInfo(final String token) {
+        RestClient restClient = RestClient.create();
 
         try {
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.exchange(
-                "https://kapi.kakao.com/v2/user/me",
-                HttpMethod.POST,
-                kakaoTokenRequest,
-                String.class
-            );
-            String responseBody = response.getBody();
+            String responseBody = restClient.post()
+                    .uri("https://kapi.kakao.com/v2/user/me")
+                    .headers(headers -> {
+                        headers.add("Authorization", "Bearer " + token);
+                        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                    })
+                    .retrieve()
+                    .body(String.class);
+
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(responseBody);
             String email = jsonNode.get("kakao_account").get("email").asText();
+
             return new KakaoLoginRequest(email);
-        } catch (HttpClientErrorException e) {
+
+        } catch (HttpClientErrorException | JsonProcessingException e) {
             throw new InvalidAuthCodeException();
         }
     }
