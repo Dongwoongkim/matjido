@@ -17,6 +17,8 @@ public class KakaoSearchApiClient {
     private static final String KEYWORD_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/keyword.json";
     private static final String RESTAURANT_GROUP_CODE = "FD6";
 
+    private final RestClient restClient;
+
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String restApiKey;
 
@@ -28,12 +30,9 @@ public class KakaoSearchApiClient {
                     .build()
                     .toUriString();
 
-            RestClient restClient = RestClient.builder()
-                    .defaultHeader("Authorization", "KakaoAK " + restApiKey)
-                    .build();
-
             KakaoPlacesSearchResponse response = restClient.get()
                     .uri(uri)
+                    .header("Authorization", "KakaoAK " + restApiKey)
                     .retrieve()
                     .body(KakaoPlacesSearchResponse.class);
 
