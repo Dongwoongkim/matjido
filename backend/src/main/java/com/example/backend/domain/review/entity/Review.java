@@ -1,5 +1,6 @@
 package com.example.backend.domain.review.entity;
 
+import com.example.backend.domain.restaurant.entity.Restaurant;
 import com.example.backend.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,10 +11,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,9 +34,13 @@ public class Review {
     @Column(name = "review_id")
     private Long reviewId;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false, unique = true)
+    private Restaurant restaurant;
 
     private String title;
 
@@ -42,4 +51,34 @@ public class Review {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @Builder
+    private Review(User user, Restaurant restaurant, String title, String content, ReviewScore reviewScore) {
+        this.user = user;
+        this.restaurant = restaurant;
+        this.title = title;
+        this.content = content;
+        this.reviewScore = reviewScore;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public Long getUserId() {
+        return user != null ? user.getId() : null;
+    }
+
+    public Long getRestaurantId() {
+        return restaurant != null ? restaurant.getId() : null;
+    }
 }

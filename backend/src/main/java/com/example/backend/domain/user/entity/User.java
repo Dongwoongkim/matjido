@@ -39,4 +39,8 @@ public class User {
     public String getRole() {
         return role.name();
     }
+
+    public boolean isOwner(Long userId) {
+        return this.id != null && this.id.equals(userId);
+    }
 }
