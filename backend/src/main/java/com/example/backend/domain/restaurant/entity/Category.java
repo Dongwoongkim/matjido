@@ -1,0 +1,57 @@
+package com.example.backend.domain.restaurant.entity;
+
+import com.example.backend.domain.restaurant.exception.CategoryDepthExceededException;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@SQLDelete(sql = "UPDATE category SET is_deleted = true WHERE category_id = ?")
+@Where(clause = "is_deleted = false")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+@Entity
+public class Category {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
+    private Long id;
+
+    private String name;
+    private int depth;
+    private boolean isDeleted = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Category parent;
+
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Category> children = new HashSet<>();
+
+
+    private Category(String name, Category parent, int depth) {
+        this.name = name;
+        this.parent = parent;
+        this.depth = depth;
+    }
+
+    public static Category of(String name, Category parent) {
+        final int MIN_DEPTH = 1;
+        final int MAX_DEPTH = 3;
+        int depth = (parent != null) ? parent.getDepth() + 1 : MIN_DEPTH;
+
+        if (depth > MAX_DEPTH) {
+            throw new CategoryDepthExceededException(depth);
+        }
+
+        return new Category(name, parent, depth);
+    }
+}
