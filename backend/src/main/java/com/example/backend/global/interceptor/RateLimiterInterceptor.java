@@ -1,5 +1,6 @@
 package com.example.backend.global.interceptor;
 
+import com.example.backend.global.util.IpUtil;
 import com.google.common.util.concurrent.RateLimiter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,7 +34,7 @@ public class RateLimiterInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        String ip = request.getRemoteAddr();
+        String ip = IpUtil.getClientIp(request);
         long now = System.currentTimeMillis();
 
         if (!isRequestAllowed(ip)) {
