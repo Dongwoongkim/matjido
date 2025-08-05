@@ -12,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import java.time.LocalDateTime;
@@ -38,8 +37,8 @@ public class Review {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
     private String title;
@@ -48,6 +47,8 @@ public class Review {
 
     @Enumerated(EnumType.STRING)
     private ReviewScore reviewScore;
+
+    private boolean isDeleted;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -59,6 +60,7 @@ public class Review {
         this.title = title;
         this.content = content;
         this.reviewScore = reviewScore;
+        this.isDeleted = false;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -80,5 +82,9 @@ public class Review {
 
     public Long getRestaurantId() {
         return restaurant != null ? restaurant.getId() : null;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 }

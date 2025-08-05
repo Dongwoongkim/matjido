@@ -8,6 +8,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
+    @Query("SELECT r FROM Review r "
+        + "WHERE r.restaurant.id = :restaurantId "
+        + "AND r.isDeleted = false")
+    Optional<Review> findByRestaurantId(@Param("restaurantId") Long restaurantId);
+
     @Query("SELECT r FROM Review r " +
         "JOIN FETCH r.user u " +
         "JOIN FETCH r.restaurant res " +
