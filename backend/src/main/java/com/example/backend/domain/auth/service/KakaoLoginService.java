@@ -34,6 +34,7 @@ public class KakaoLoginService {
     private final LogoutTokenService logoutTokenService;
     private final UserRepository userRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+    private final RestClient restClient;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String kakaoClientId;
@@ -97,8 +98,6 @@ public class KakaoLoginService {
     }
 
     private String getAccessToken(String code) {
-        RestClient restClient = RestClient.create();
-
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", kakaoClientId);
