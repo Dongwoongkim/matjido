@@ -1,13 +1,13 @@
 package com.example.backend.domain.restaurant.repository;
 
 import com.example.backend.domain.restaurant.entity.Restaurant;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.repository.query.Param;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
@@ -16,11 +16,11 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     Page<Restaurant> findAllByUserId(Long userId, Pageable pageable);
 
     @Query(
-            "select r from Restaurant r " +
+        "select r from Restaurant r " +
             "where r.user.id = :userId " +
             "and (:categoryName is null or r.category.name = :categoryName)"
     )
-    Page<Restaurant> findByUserIdAndCategoryName(Long userId, String categoryName, Pageable pageable);
+    Page<Restaurant> findByUserIdAndCategoryName(@Param("userId") Long userId, @Param("categoryName") String categoryName, Pageable pageable);
 
     Optional<Restaurant> findByIdAndUserId(Long id, Long userId);
 }

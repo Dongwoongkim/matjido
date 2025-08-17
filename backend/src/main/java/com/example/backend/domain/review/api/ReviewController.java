@@ -3,7 +3,7 @@ package com.example.backend.domain.review.api;
 import com.example.backend.domain.review.api.response.ReviewDetailResponse;
 import com.example.backend.domain.review.service.ReviewService;
 import com.example.backend.domain.review.service.request.ReviewCreateRequest;
-import com.example.backend.domain.review.service.request.ReviewDeleteRequest;
+import com.example.backend.global.annotation.CurrentUserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,25 +24,27 @@ public class ReviewController {
 
     @GetMapping("/{restaurantId}")
     public ResponseEntity<ReviewDetailResponse> getReview(
-        @PathVariable Long restaurantId
+        @PathVariable("restaurantId") Long restaurantId
     ) {
         return ResponseEntity.ok(reviewService.getReviewByRestaurantId(restaurantId));
     }
-    
+
     @PostMapping
     public ResponseEntity<Void> createReview(
+        @CurrentUserId Long userId,
         @RequestBody ReviewCreateRequest reviewCreateRequest
     ) {
-        reviewService.addReview(reviewCreateRequest);
+        reviewService.addReview(userId, reviewCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
             .build();
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{restaurantId}")
     public ResponseEntity<Void> deleteReview(
-        @RequestBody ReviewDeleteRequest reviewDeleteRequest
+        @CurrentUserId Long userId,
+        @PathVariable("restaurantId") Long restaurantId
     ) {
-        reviewService.deleteReview(reviewDeleteRequest);
+        reviewService.deleteReview(userId, restaurantId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();
     }
