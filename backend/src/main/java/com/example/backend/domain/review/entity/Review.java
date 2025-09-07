@@ -20,8 +20,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
-
+@SQLDelete(sql = "UPDATE review SET is_deleted = true WHERE review_id = ?")
+@Where(clause = "is_deleted = false")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -48,6 +51,7 @@ public class Review {
     @Enumerated(EnumType.STRING)
     private ReviewScore reviewScore;
 
+    @Column(nullable = false)
     private boolean isDeleted;
 
     private LocalDateTime createdAt;
@@ -82,9 +86,5 @@ public class Review {
 
     public Long getRestaurantId() {
         return restaurant != null ? restaurant.getId() : null;
-    }
-
-    public void delete() {
-        this.isDeleted = true;
     }
 }

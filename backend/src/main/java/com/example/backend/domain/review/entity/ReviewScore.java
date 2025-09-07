@@ -5,13 +5,13 @@ import lombok.Getter;
 
 @Getter
 public enum ReviewScore {
-    
-    ONE(1, "재방문 의사 없음"),
-    TWO(2, ""),
-    THREE(3, ""),
-    FOUR(4, ""),
-    FIVE(5, "재방문 의사 있음");
 
+    ONE(1, "매우 불만족"),
+    TWO(2, "불만족"),
+    THREE(3, "보통"),
+    FOUR(4, "만족"),
+    FIVE(5, "매우 만족");
+    
     private final int score;
     private final String description;
 

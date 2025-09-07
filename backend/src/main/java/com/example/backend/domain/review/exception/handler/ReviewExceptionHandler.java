@@ -31,6 +31,6 @@ public class ReviewExceptionHandler {
 
     @ExceptionHandler(UnauthorizedReviewAccessException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedReviewAccessException(UnauthorizedReviewAccessException e) {
-        return ErrorResponseUtil.getResponse(e, HttpStatus.UNAUTHORIZED);
+        return ErrorResponseUtil.getResponse(e, HttpStatus.FORBIDDEN);
     }
 }

@@ -7,11 +7,8 @@ import com.example.backend.domain.review.api.response.ReviewDetailResponse;
 import com.example.backend.domain.review.entity.Review;
 import com.example.backend.domain.review.exception.DuplicateReviewException;
 import com.example.backend.domain.review.exception.ReviewNotFoundException;
-import com.example.backend.domain.review.exception.UnauthorizedReviewAccessException;
-import com.example.backend.domain.review.exception.UnauthorizedReviewAccessException.ReviewAction;
 import com.example.backend.domain.review.repository.ReviewRepository;
 import com.example.backend.domain.review.service.request.ReviewCreateRequest;
-import com.example.backend.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,14 +29,8 @@ public class ReviewService {
 
     @Transactional
     public void addReview(Long userId, ReviewCreateRequest reviewCreateRequest) {
-        Restaurant restaurant = restaurantRepository.findById(reviewCreateRequest.restaurantId())
+        Restaurant restaurant = restaurantRepository.findByIdAndUserId(reviewCreateRequest.restaurantId(), userId)
             .orElseThrow(() -> new RestaurantNotFoundException(reviewCreateRequest.restaurantId()));
-
-        User user = restaurant.getUser();
-
-        if (!user.isOwner(userId)) {
-            throw new UnauthorizedReviewAccessException(ReviewAction.CREATE);
-        }
 
         reviewRepository.findByRestaurantId(reviewCreateRequest.restaurantId())
             .ifPresent(r -> {
@@ -47,7 +38,7 @@ public class ReviewService {
             });
 
         Review review = Review.builder()
-            .user(user)
+            .user(restaurant.getUser())
             .restaurant(restaurant)
             .title(reviewCreateRequest.title())
             .content(reviewCreateRequest.content())
@@ -59,18 +50,12 @@ public class ReviewService {
 
     @Transactional
     public void deleteReview(Long userId, Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+        Restaurant restaurant = restaurantRepository.findByIdAndUserId(restaurantId, userId)
             .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
-
-        User user = restaurant.getUser();
-
-        if (!user.isOwner(userId)) {
-            throw new UnauthorizedReviewAccessException(ReviewAction.DELETE);
-        }
 
         Review review = reviewRepository.findByRestaurantId(restaurant.getId())
             .orElseThrow(ReviewNotFoundException::new);
 
-        review.delete();
+        reviewRepository.delete(review);
     }
 }

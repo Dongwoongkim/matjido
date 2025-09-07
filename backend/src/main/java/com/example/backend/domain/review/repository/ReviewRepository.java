@@ -12,11 +12,4 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         + "WHERE r.restaurant.id = :restaurantId "
         + "AND r.isDeleted = false")
     Optional<Review> findByRestaurantId(@Param("restaurantId") Long restaurantId);
-
-    @Query("SELECT r FROM Review r " +
-        "JOIN FETCH r.user u " +
-        "JOIN FETCH r.restaurant res " +
-        "WHERE res.id = :restaurantId AND u.id = :reviewerId")
-    Optional<Review> findByRestaurantIdAndReviewerId(@Param("restaurantId") Long restaurantId,
-        @Param("reviewerId") Long reviewerId);
 }
